@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
+    }
+}
+
+plugins {
+    id 'java'
+    id "org.openjfx.javafxplugin" version "0.0.4"
+}
+
+
+apply plugin: 'application'
+apply plugin: 'com.google.osdetector'
+
+ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
+
+group 'com.s2icode.openjdk.javafxtest'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+
+}
+
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls'
+        ]
+    }
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls,javafx.fxml'
+        ]
+    }
+    main = 'sample.Main'
+
+}
+
+mainClassName = 'sample.Main'
+
+
+dependencies {
+    compile "org.openjfx:javafx-base:11:$platform"
+    compile "org.openjfx:javafx-graphics:11:$platform"
+    compile "org.openjfx:javafx-controls:11:$platform"
+    compile "org.openjfx:javafx-fxml:11:$platform"
+
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
